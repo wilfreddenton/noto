@@ -19,8 +19,12 @@ export default function notoBlocks(state = [
       newState[action.id].text = action.text
       return newState
     }
-    case NOTO_CREATE_ACTION:
-      return [...state, Object.assign({}, newBlock)]
+    case NOTO_CREATE_ACTION: {
+      let newState = [...state]
+      newState.splice(action.id + 1, 0, Object.assign({}, newBlock))
+      console.log(newState)
+      return newState
+    }
     case NOTO_DELETE_ACTION: {
       let newState = [...state]
       if (action.id !== 0)

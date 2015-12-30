@@ -14,7 +14,7 @@ import {
 export default function notoEditor(state = 0, action) {
   switch (action.type) {
     case NOTO_CREATE_ACTION:
-      return state + 1
+      return action.toID ? action.toID : action.id + 1
     case NOTO_DELETE_ACTION:
       return (state > 0) ? state - 1 : 0
     case NOTO_SELECT_ACTION:

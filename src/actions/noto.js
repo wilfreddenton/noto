@@ -21,9 +21,11 @@ export function notoRawAction(raw) {
   }
 }
 
-export function notoCreateAction() {
+export function notoCreateAction(id, toID) {
   return {
-    type: NOTO_CREATE_ACTION
+    type: NOTO_CREATE_ACTION,
+    id: id,
+    toID: toID
   }
 }
 

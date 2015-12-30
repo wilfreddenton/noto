@@ -5,6 +5,7 @@ import MDPreview from './MDPreview'
 export default class NotoBlock extends Component {
   static propTypes = {
     changeHandler: PropTypes.func,
+    pasteHandler: PropTypes.func,
     notoDeleteAction: PropTypes.func,
     notoSelectAction: PropTypes.func,
     id: PropTypes.number,
@@ -17,9 +18,11 @@ export default class NotoBlock extends Component {
     this.deleteHandler = this.deleteHandler.bind(this)
     this.prepareEditor = this.prepareEditor.bind(this)
     this.clickHandler = this.clickHandler.bind(this)
+    this.pasteHandler = this.pasteHandler.bind(this)
   }
   prepareEditor() {
     let editor = this.refs.editor
+    editor.addEventListener('paste', this.pasteHandler)
     editor.addEventListener('keydown', this.deleteHandler)
     editor.focus()
     editor.selectionStart = editor.selectionEnd = editor.value.length
@@ -40,6 +43,12 @@ export default class NotoBlock extends Component {
   clickHandler(e) {
     if (!this.props.selected)
       this.props.notoSelectAction(this.props.id)
+  }
+  pasteHandler(e) {
+    setTimeout(() => {
+      const toID = this.props.id + this.props.text.split('\n\n').length - 1
+      this.props.pasteHandler(this.props.id, toID)
+    }, 100)
   }
   componentDidMount() {
     if (this.props.selected) {

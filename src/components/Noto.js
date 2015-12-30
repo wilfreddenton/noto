@@ -28,27 +28,48 @@ export default class Noto extends Component {
   constructor(props) {
     super(props)
     this.blockTextUpdate = this.blockTextUpdate.bind(this)
+    this.pasteHandler = this.pasteHandler.bind(this)
+    this.generateBlocks = this.generateBlocks.bind(this)
     this.saveRaw = _.debounce(this.saveRaw.bind(this), 1000)
   }
   blockTextUpdate(id, text) {
     const dispatch = this.props.dispatch
     dispatch(notoWriteAction(id, text))
-    this.saveRaw()
-    if (/.*\n\n$/.test(text)) dispatch(notoCreateAction())
+    this.saveRaw() // debounced in constructor
+    if (/.*\n\n$/.test(text)) dispatch(notoCreateAction(id))
   }
   saveRaw() {
     let raw = ""
     this.props.blocks.forEach((block) => raw += block.text)
     this.props.dispatch(notoRawAction(raw))
   }
-  componentDidMount() {
-    let parsedRaw = this.props.raw.split('\n\n')
+  generateBlocks(raw) {
+    let parsedRaw = raw ? raw.split('\n\n') : this.props.raw.split('\n\n')
     let blocks = []
     parsedRaw.forEach((text, i) => {
       if (i !== parsedRaw.length - 1)
         text += '\n\n'
       if (text) blocks.push({ text: text })
     })
+    return blocks
+  }
+  pasteHandler(id, toID) {
+    let raw = ""
+    this.props.blocks.forEach((block, i) => {
+      let text = block.text
+      if (id === i) {
+        text = text.trim()
+        if (id !== this.props.blocks.length - 1) text += '\n\n'
+      }
+      raw += text
+    })
+    const blocks = this.generateBlocks(raw)
+    this.props.dispatch(notoRawAction(raw))
+    this.props.dispatch(notoBlocksAction(blocks))
+    this.props.dispatch(notoSelectAction(toID))
+  }
+  componentDidMount() {
+    const blocks = this.generateBlocks()
     this.props.dispatch(notoBlocksAction(blocks))
     this.props.dispatch(notoSelectAction(blocks.length - 1))
   }
@@ -57,6 +78,7 @@ export default class Noto extends Component {
       let selected = (i === this.props.selectedBlock) ? true : false
       return <NotoBlock key={i} id={i} selected={selected} text={block.text}
         changeHandler={this.blockTextUpdate}
+        pasteHandler={this.pasteHandler}
         { ...bindActionCreators({ notoDeleteAction, notoSelectAction }, this.props.dispatch)} />
     })
     //<MDPreview markdown={this.props.raw} />
