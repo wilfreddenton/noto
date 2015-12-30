@@ -1,0 +1,10 @@
+html {
+  box-sizing: border-box;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+body {
+   font-family: "Helvetica Neue", Helvetica, Arial, Roboto, "Lucida Grande", sans-serif;
+   margin: 0;
+}
