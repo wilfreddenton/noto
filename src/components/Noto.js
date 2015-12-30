@@ -23,7 +23,10 @@ import styles from '../styles/noto.scss'
 }))
 export default class Noto extends Component {
   static propTypes = {
-    blocks: PropTypes.array
+    blocks: PropTypes.array,
+    dispatch: PropTypes.func,
+    selectedBlock: PropTypes.number,
+    raw: PropTypes.string
   }
   constructor(props) {
     super(props)
@@ -39,8 +42,13 @@ export default class Noto extends Component {
     if (/.*\n\n$/.test(text)) dispatch(notoCreateAction(id))
   }
   saveRaw() {
-    let raw = ""
-    this.props.blocks.forEach((block) => raw += block.text)
+    let raw = ''
+    this.props.blocks.forEach((block, i) => {
+      let text = block.text.trim()
+      if (i !== this.props.blocks.length - 1)
+        text += '\n\n'
+      raw += text
+    })
     this.props.dispatch(notoRawAction(raw))
   }
   generateBlocks(raw) {
@@ -54,7 +62,7 @@ export default class Noto extends Component {
     return blocks
   }
   pasteHandler(id, toID) {
-    let raw = ""
+    let raw = ''
     this.props.blocks.forEach((block, i) => {
       let text = block.text
       if (id === i) {
@@ -76,10 +84,10 @@ export default class Noto extends Component {
   render() {
     const blocks = this.props.blocks.map((block, i) => {
       let selected = (i === this.props.selectedBlock) ? true : false
-      return <NotoBlock key={i} id={i} selected={selected} text={block.text}
+      return (<NotoBlock key={i} id={i} selected={selected} text={block.text}
         changeHandler={this.blockTextUpdate}
         pasteHandler={this.pasteHandler}
-        { ...bindActionCreators({ notoDeleteAction, notoSelectAction }, this.props.dispatch)} />
+        { ...bindActionCreators({ notoDeleteAction, notoSelectAction }, this.props.dispatch)} />)
     })
     //<MDPreview markdown={this.props.raw} />
     return (

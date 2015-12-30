@@ -15,7 +15,10 @@ export default class NotoBlock extends Component {
   constructor(props) {
     super(props)
     this.changeHandler = this.changeHandler.bind(this)
+    this.keydownHandler = this.keydownHandler.bind(this)
+    this.keyupHandler = this.keyupHandler.bind(this)
     this.deleteHandler = this.deleteHandler.bind(this)
+    this.updownHandler = this.updownHandler.bind(this)
     this.prepareEditor = this.prepareEditor.bind(this)
     this.clickHandler = this.clickHandler.bind(this)
     this.pasteHandler = this.pasteHandler.bind(this)
@@ -23,21 +26,46 @@ export default class NotoBlock extends Component {
   prepareEditor() {
     let editor = this.refs.editor
     editor.addEventListener('paste', this.pasteHandler)
-    editor.addEventListener('keydown', this.deleteHandler)
+    editor.addEventListener('keydown', this.keydownHandler)
+    editor.addEventListener('keyup', this.keyupHandler)
     editor.focus()
     editor.selectionStart = editor.selectionEnd = editor.value.length
   }
   changeHandler(e) {
     this.props.changeHandler(this.props.id, this.refs.editor.value)
   }
+  keydownHandler(e) {
+    const key = e.keyCode || e.charCode
+    switch (key) {
+      case 8:
+        this.deleteHandler(e)
+        break
+    }
+  }
+  keyupHandler(e) {
+    const key = e.keyCode || e.charCode
+    switch (key) {
+      case 38:
+      case 40:
+        this.updownHandler(e, key)
+        break
+    }
+  }
   deleteHandler(e) {
     if (this.props.text === '') {
-      var key = event.keyCode || event.charCode
-      if (key === 8) {
-        e.preventDefault()
-        this.props.notoDeleteAction(this.props.id)
-        return false
-      }
+      e.preventDefault()
+      this.props.notoDeleteAction(this.props.id)
+      return false
+    }
+  }
+  updownHandler(e, key) {
+    const editor = this.refs.editor
+    console.log(editor.value.split(/\r?\n/))
+    console.log(editor.selectionStart, editor.selectionEnd)
+    if (key === 38 && editor.selectionStart === 0) { // up
+      this.props.notoSelectAction(this.props.id - 1)
+    } else if (key === 40 && editor.selectionStart === editor.value.length) { // down
+      this.props.notoSelectAction(this.props.id + 1)
     }
   }
   clickHandler(e) {
@@ -65,8 +93,11 @@ export default class NotoBlock extends Component {
     }
   }
   componentWillUnmount() {
-    if (this.props.selected)
+    if (this.props.selected) {
       this.refs.editor.removeEventListener('keydown', this.deleteHandler)
+      this.refs.editor.removeEventListener('keyup', this.keyupHandler)
+      this.refs.editor.removeEventListener('paste', this.pasteHandler)
+    }
   }
   render() {
     const editor = (this.props.selected
