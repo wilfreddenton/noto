@@ -1,4 +1,5 @@
 import React, { PropTypes, Component } from 'react'
+import { findDOMNode } from 'react-dom'
 import _ from 'lodash'
 import autosize from 'autosize'
 import MDPreview from './MDPreview'
@@ -18,6 +19,8 @@ export default class NotoBlock extends Component {
   }
   constructor(props) {
     super(props)
+    this.span = this.span.bind(this)
+    this.debouncedSpan = _.debounce(this.span, 1000)
     this.changeHandler = this.changeHandler.bind(this)
     this.keydownHandler = this.keydownHandler.bind(this)
     this.keyupHandler = this.keyupHandler.bind(this)
@@ -26,6 +29,7 @@ export default class NotoBlock extends Component {
     this.prepareEditor = this.prepareEditor.bind(this)
     this.clickHandler = this.clickHandler.bind(this)
     this.pasteHandler = this.pasteHandler.bind(this)
+    this.cursorClickHandler = this.cursorClickHandler.bind(this)
   }
   prepareEditor() {
     let editor = this.refs.editor
@@ -35,7 +39,49 @@ export default class NotoBlock extends Component {
     editor.addEventListener('keyup', this.keyupHandler)
     editor.focus()
   }
+  cursorClickHandler(e) {
+    let child = e.target
+    let i = 0
+    while ((child = child.previousSibling) != null)
+      i += 1
+    child = e.target
+    const eventLeft = e.clientX
+    const childLeft = child.offsetLeft
+    const childWidth = child.offsetWidth
+    const childRight = childLeft + childWidth
+    setTimeout(() => {
+      let editor = this.refs.editor
+      if (Math.abs(eventLeft - childLeft) <= Math.abs(eventLeft - childRight)) {
+        editor.selectionStart = editor.selectionEnd = i
+      } else {
+        editor.selectionStart = editor.selectionEnd = i + 1
+      }
+      editor.focus()
+    }, 100)
+  }
+  span(ele) {
+    // traverse dom and replace textContent with character span wrapped version
+    let node = ele ? ele : findDOMNode(this.refs.preview)
+    _.forEach(node.children, (child, i) => {
+      let docFrag = document.createDocumentFragment()
+      if (!/<([a-zA-Z]*)\b[^>]*>(.*?)<\/\1>/.test(child.innerHTML)) {
+        const text = child.innerHTML
+        for (let j = 0; j < text.length; j += 1) {
+          let span = document.createElement('span')
+          span.innerHTML = text.charAt(j)
+          span.onclick = this.cursorClickHandler
+          docFrag.appendChild(span)
+        }
+        child.innerHTML = ''
+        child.appendChild(docFrag)
+      } else {
+        this.span(child)
+      }
+    })
+    return
+  }
   changeHandler(e) {
+    this.debouncedSpan()
     this.props.changeHandler(this.props.id, this.refs.editor.value)
   }
   keydownHandler(e) {
@@ -81,6 +127,7 @@ export default class NotoBlock extends Component {
     }, 100)
   }
   componentDidMount() {
+    this.span()
     if (this.props.selected) {
       this.prepareEditor()
     }
@@ -103,11 +150,14 @@ export default class NotoBlock extends Component {
   }
   render() {
     const editor = (this.props.selected
-      ? <textarea ref="editor" styleName="noto-editor" value={this.props.text} onChange={this.changeHandler} />
+      ? (<div>
+           <div styleName="markdown-symbol"></div>
+           <textarea ref="editor" styleName="noto-editor" value={this.props.text} onChange={this.changeHandler} />
+         </div>)
       : null)
     return (
       <div onClick={this.clickHandler} >
-        <MDPreview markdown={this.props.text} />
+        <MDPreview ref="preview" markdown={this.props.text} />
         {editor}
       </div>
     )

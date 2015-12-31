@@ -29,7 +29,7 @@ module.exports = {
     loaders: [
       { test: /\.(css|scss)$/, exclude: /node_modules/, loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!sass') },
       { test: /\.js$/, exclude: /node_modules/, loaders: ['react-hot', 'babel'] },
-      { test: /\.(ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/, exclude: /node_modules/, loaders: ['file'] }
+      { test: /\.(png|ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/, exclude: /node_modules/, loaders: ['file'] }
     ]
   }
 }
