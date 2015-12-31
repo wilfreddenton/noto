@@ -17,7 +17,7 @@ export default class Home extends Component {
     //<ExampleButton {...bindActionCreators(ExampleActions, dispatch)} />
     return (
       <div data-component="home">
-        <h1>nōto</h1>
+        <h1 style={{color: "#F80000"}}>nōto</h1>
         <Noto />
       </div>
     )

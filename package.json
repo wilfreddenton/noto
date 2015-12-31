@@ -10,6 +10,7 @@
     "start": "npm run build && node server.js"
   },
   "dependencies": {
+    "autosize": "^3.0.14",
     "history": "1.13.1",
     "lodash": "^3.10.1",
     "marked": "^0.3.5",

@@ -93,10 +93,14 @@ body {
    margin: 0;
 }
 textarea, code, pre {
-  font-family: 'Inconsolata'
+  font-family: 'Inconsolata';
+  font-size: 14px
 }
-p {
-  font-family: 'Charter'
+p, li {
+  font-family: 'Charter';
+  font-size: 18px;
+  letter-spacing: -0.0004em;
+  line-height: 1.5;
 }
 h1 {
   font-family: 'Open Sans';

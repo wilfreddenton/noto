@@ -15,12 +15,12 @@ import NotoBlock from './NotoBlock'
 import CSSModules from 'react-css-modules'
 import styles from '../styles/noto.scss'
 
-@CSSModules(styles)
 @connect(state => ({
   selectedBlock: state.notoEditor,
   blocks: state.notoBlocks,
   raw: state.notoRaw
 }))
+@CSSModules(styles)
 export default class Noto extends Component {
   static propTypes = {
     blocks: PropTypes.array,
@@ -91,9 +91,10 @@ export default class Noto extends Component {
     })
     //<MDPreview markdown={this.props.raw} />
     return (
-      <div>
+      <div styleName="noto">
         {blocks}
       </div>
     )
   }
 }
+

@@ -1,7 +1,11 @@
 import React, { PropTypes, Component } from 'react'
 import _ from 'lodash'
+import autosize from 'autosize'
 import MDPreview from './MDPreview'
+import CSSModules from 'react-css-modules'
+import styles from '../styles/noto.scss'
 
+@CSSModules(styles)
 export default class NotoBlock extends Component {
   static propTypes = {
     changeHandler: PropTypes.func,
@@ -25,11 +29,11 @@ export default class NotoBlock extends Component {
   }
   prepareEditor() {
     let editor = this.refs.editor
+    autosize(editor)
     editor.addEventListener('paste', this.pasteHandler)
     editor.addEventListener('keydown', this.keydownHandler)
     editor.addEventListener('keyup', this.keyupHandler)
     editor.focus()
-    editor.selectionStart = editor.selectionEnd = editor.value.length
   }
   changeHandler(e) {
     this.props.changeHandler(this.props.id, this.refs.editor.value)
@@ -60,8 +64,6 @@ export default class NotoBlock extends Component {
   }
   updownHandler(e, key) {
     const editor = this.refs.editor
-    console.log(editor.value.split(/\r?\n/))
-    console.log(editor.selectionStart, editor.selectionEnd)
     if (key === 38 && editor.selectionStart === 0) { // up
       this.props.notoSelectAction(this.props.id - 1)
     } else if (key === 40 && editor.selectionStart === editor.value.length) { // down
@@ -101,7 +103,7 @@ export default class NotoBlock extends Component {
   }
   render() {
     const editor = (this.props.selected
-      ? <textarea ref="editor" value={this.props.text} onChange={this.changeHandler} />
+      ? <textarea ref="editor" styleName="noto-editor" value={this.props.text} onChange={this.changeHandler} />
       : null)
     return (
       <div onClick={this.clickHandler} >
