@@ -42,7 +42,7 @@ export default class NotoBlock extends Component {
   cursorClickHandler(e) {
     let child = e.target
     let i = 0
-    while ((child = child.previousSibling) != null)
+    while ((child = child.previousSibling) !== null)
       i += 1
     child = e.target
     const eventLeft = e.clientX
@@ -64,7 +64,7 @@ export default class NotoBlock extends Component {
     let node = ele ? ele : findDOMNode(this.refs.preview)
     _.forEach(node.children, (child, i) => {
       let docFrag = document.createDocumentFragment()
-      if (!/<([a-zA-Z]*)\b[^>]*>(.*?)<\/\1>/.test(child.innerHTML)) {
+      if (!/<([a-zA-Z]*)\b[^>]*>([^]*?)<\/\1>/.test(child.innerHTML)) {
         const text = child.innerHTML
         for (let j = 0; j < text.length; j += 1) {
           let span = document.createElement('span')
