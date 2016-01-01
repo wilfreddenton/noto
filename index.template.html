@@ -7,6 +7,7 @@
     {% if (o.htmlWebpackPlugin.files.favicon) { %}
     <link rel="icon" type="image/png" href="{%=o.htmlWebpackPlugin.files.favicon%}">
     {% } %}
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
     {% for (var css in o.htmlWebpackPlugin.files.css) { %}
     <link rel="stylesheet" type="text/css" href="{%=o.htmlWebpackPlugin.files.css[css]%}">
     {% } %}

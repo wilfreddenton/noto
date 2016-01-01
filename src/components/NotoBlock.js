@@ -64,6 +64,10 @@ export default class NotoBlock extends Component {
     let node = ele ? ele : findDOMNode(this.refs.preview)
     _.forEach(node.children, (child, i) => {
       let docFrag = document.createDocumentFragment()
+      if (child.className.indexOf('katex') > -1) {
+        console.log('hey')
+        return
+      }
       if (!/<([a-zA-Z]*)\b[^>]*>([^]*?)<\/\1>/.test(child.innerHTML)) {
         const text = child.innerHTML
         for (let j = 0; j < text.length; j += 1) {
@@ -102,7 +106,11 @@ export default class NotoBlock extends Component {
     }
   }
   deleteHandler(e) {
-    if (this.props.text === '') {
+    if (this.refs.editor.selectionStart === 0 && this.props.text !== '') {
+      e.preventDefault()
+      this.props.notoSelectAction(this.props.id - 1)
+      return false
+    } else if (this.props.text === '') {
       e.preventDefault()
       this.props.notoDeleteAction(this.props.id)
       return false
