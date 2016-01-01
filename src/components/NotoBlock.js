@@ -28,6 +28,8 @@ export default class NotoBlock extends Component {
     this.clickHandler = this.clickHandler.bind(this)
     this.pasteHandler = this.pasteHandler.bind(this)
     this.cursorClickHandler = this.cursorClickHandler.bind(this)
+    this.fixInput = this.fixInput.bind(this)
+    this.debouncedFixInput = _.debounce(this.fixInput, 1000)
   }
   prepareEditor() {
     let editor = this.refs.editor
@@ -37,36 +39,23 @@ export default class NotoBlock extends Component {
     editor.addEventListener('keyup', this.keyupHandler)
     editor.focus()
   }
-  cursorOffset(i, child) {
-    const tagName = child.parentNode.tagName
-    const text = this.props.text
-    console.log(tagName)
-    if (/H[1-6]/.test(tagName)) {
-      i += text.match(/#\s+/)[0].length
-    } else if (tagName === 'LI') {
-      let row = 0
-      let li = child.parentNode
-      const rows = text.split('\n')
-      while((li = li.previousSibling) !== null)
-        if (li.tagName === 'LI')
-          row += 1
-      for (let j = 0; j <= row; j += 1) {
-        if (j === row) {
-          i += rows[j].match(/([0-9]+\.|\-)\s+/)[0].length
-        } else {
-          i += rows[j].length + 1
-        }
-      }
-    }
-    return i
-  }
-  cursorClickHandler(i, node) {
-    i = this.cursorOffset(i, node)
+  cursorClickHandler(i) {
     setTimeout(() => {
       let editor = this.refs.editor
       editor.selectionStart = editor.selectionEnd = i
       editor.focus()
     }, 100)
+  }
+  fixInput() {
+    let editor = this.refs.editor
+    let text = editor.value
+    text = text.replace(/[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\)/g, (match, text, id) => {
+      return match.slice(0, -1) + '/' + match.slice(-1)
+    })
+    const diff = text.length - editor.value.length
+    let selectionStart = editor.selectionStart
+    this.props.changeHandler(this.props.id, text)
+    editor.selectionStart = editor.selectionEnd = selectionStart + diff
   }
   changeHandler(e) {
     this.props.changeHandler(this.props.id, this.refs.editor.value)

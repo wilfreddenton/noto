@@ -1,4 +1,5 @@
 import React, { PropTypes, Component } from 'react'
+import _ from 'lodash'
 import { findDOMNode } from 'react-dom'
 import marked from 'marked'
 import katex from 'katex'
@@ -15,12 +16,53 @@ export default class MDPreview extends Component {
     this.cursorClickHandler = this.cursorClickHandler.bind(this)
     this.katexParser = this.katexParser.bind(this)
   }
+  inlineOffsets(child) {
+    if (child.tagName === 'EM') {
+      return child.children.length + 2
+    } else if (child.tagName === 'STRONG') {
+      return child.children.length + 4
+    } else if (child.tagName === 'A') {
+      return child.children.length + child.href.length + 4
+    } else {
+      return 1
+    }
+  }
+  cursorOffset(child) {
+    const tagName = child.parentNode.tagName
+    const text = this.props.markdown
+    const childCopy = child
+    let i = 0
+    if (/H[1-6]/.test(tagName)) {
+      i += text.match(/#\s+/)[0].length
+    } else if (tagName === 'P') {
+      while ((child = child.previousSibling) !== null) {
+        i += this.inlineOffsets(child)
+      }
+    } else if (tagName === 'LI') {
+      while ((child = child.previousSibling) !== null)
+        i += this.inlineOffsets(child)
+      child = childCopy
+      let row = 0
+      let li = child.parentNode
+      const rows = text.split('\n')
+      while((li = li.previousSibling) !== null)
+        if (li.tagName === 'LI')
+          row += 1
+      for (let j = 0; j <= row; j += 1) {
+        if (j === row) {
+          i += rows[j].match(/([0-9]+\.|\-)\s+/)[0].length
+        } else {
+          i += rows[j].length + 1
+        }
+      }
+    } else if (tagName === 'EM') {
+      let match = null
+    }
+    return i
+  }
   cursorClickHandler(e) {
     let child = e.target
-    let i = 0
-    while ((child = child.previousSibling) !== null)
-      i += 1
-    child = e.target
+    let i = this.cursorOffset(child)
     const eventLeft = e.clientX
     const childLeft = child.offsetLeft
     const childWidth = child.offsetWidth
@@ -28,29 +70,28 @@ export default class MDPreview extends Component {
     if (Math.abs(eventLeft - childLeft) > Math.abs(eventLeft - childRight)) {
       i += 1
     }
-    this.props.cursorClickHandler(i, child)
+    this.props.cursorClickHandler(i)
   }
   span(ele) {
     // traverse dom and replace textContent with character span wrapped version
     let node = ele ? ele : findDOMNode(this)
-    _.forEach(node.children, (child, i) => {
+    let children = _.map(node.childNodes, (child) => child)
+    _.forEach(children, (child, i) => {
       let docFrag = document.createDocumentFragment()
-      if (child.className.indexOf('katex') > -1 || child.tagName === 'SPAN') {
+      if ((child.className && child.className.indexOf('katex') > -1) || child.tagName === 'SPAN')
         return
-      }
-      if (!/<([a-zA-Z0-9]*)\b[^>]*>([^]*?)<\/\1>/.test(child.innerHTML)) {
-        const text = child.innerHTML
+      if (child.nodeName === '#text') {
+        const text = child.textContent
         for (let j = 0; j < text.length; j += 1) {
           let span = document.createElement('span')
           span.innerHTML = text.charAt(j)
           span.onclick = this.cursorClickHandler
           docFrag.appendChild(span)
         }
-        child.innerHTML = ''
-        child.appendChild(docFrag)
+        node.insertBefore(docFrag, child)
+        node.removeChild(child)
       } else {
-        if (child.tagName !== 'SPAN')
-          this.span(child)
+        this.span(child)
       }
     })
     return
