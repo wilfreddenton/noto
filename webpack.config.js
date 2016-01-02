@@ -22,7 +22,10 @@ module.exports = {
       title: 'nōto',
       filename: 'index.html',
       template: 'index.template.html',
-      favicon: path.join(__dirname, 'assets', 'images', 'favicon.png')
+      favicon: path.join(__dirname, 'assets', 'images', 'favicon.png'),
+      files: {
+        css: path.join(__dirname, 'assets', 'stylesheets', 'prism.css')
+      }
     })
   ],
   module: {

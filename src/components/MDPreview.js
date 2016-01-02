@@ -33,11 +33,26 @@ export default class MDPreview extends Component {
     const childCopy = child
     let i = 0
     if (/H[1-6]/.test(tagName)) {
+      while ((child = child.previousSibling) !== null)
+        i += 1
       i += text.match(/#\s+/)[0].length
     } else if (tagName === 'P') {
-      while ((child = child.previousSibling) !== null) {
+      while ((child = child.previousSibling) !== null)
         i += this.inlineOffsets(child)
-      }
+    } else if (tagName === 'EM') {
+      while ((child = child.previousSibling) !== null)
+        i += 1
+      child = childCopy
+      let parent = child.parentNode
+      i += this.cursorOffset(parent)
+      i += 1
+    } else if (tagName === 'STRONG') {
+      while ((child = child.previousSibling) !== null)
+        i += 1
+      child = childCopy
+      let parent = child.parentNode
+      i += this.cursorOffset(parent)
+      i += 2
     } else if (tagName === 'LI') {
       while ((child = child.previousSibling) !== null)
         i += this.inlineOffsets(child)
@@ -50,13 +65,11 @@ export default class MDPreview extends Component {
           row += 1
       for (let j = 0; j <= row; j += 1) {
         if (j === row) {
-          i += rows[j].match(/([0-9]+\.|\-)\s+/)[0].length
+          i += rows[j].match(/([0-9]+\.|\-|\+|\*)\s+/)[0].length
         } else {
           i += rows[j].length + 1
         }
       }
-    } else if (tagName === 'EM') {
-      let match = null
     }
     return i
   }
@@ -78,6 +91,9 @@ export default class MDPreview extends Component {
     let children = _.map(node.childNodes, (child) => child)
     _.forEach(children, (child, i) => {
       let docFrag = document.createDocumentFragment()
+      if (child.tagName === 'CODE' && child.parentNode.tagName === 'PRE') {
+        return
+      }
       if ((child.className && child.className.indexOf('katex') > -1) || child.tagName === 'SPAN')
         return
       if (child.nodeName === '#text') {
@@ -114,6 +130,9 @@ export default class MDPreview extends Component {
     this.span()
   }
   componentDidUpdate() {
+    let code = findDOMNode(this).querySelector('pre code')
+    if (code)
+      window.Prism.highlightElement(code)
     this.debouncedSpan()
   }
   render() {
