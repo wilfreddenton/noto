@@ -1,3 +1,5 @@
+require('./../assets/stylesheets/prism.static.css')
+require('./../assets/scripts/prism.static.js')
 import React from 'react'
 import { render } from  'react-dom'
 import { Provider } from 'react-redux'

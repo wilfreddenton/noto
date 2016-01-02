@@ -22,17 +22,15 @@ module.exports = {
       title: 'nōto',
       filename: 'index.html',
       template: 'index.template.html',
-      favicon: path.join(__dirname, 'assets', 'images', 'favicon.png'),
-      files: {
-        css: path.join(__dirname, 'assets', 'stylesheets', 'prism.css')
-      }
+      favicon: path.join(__dirname, 'assets', 'images', 'favicon.png')
     })
   ],
   module: {
     loaders: [
-      { test: /\.(css|scss)$/, exclude: /node_modules/, loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!sass') },
-      { test: /\.js$/, exclude: /node_modules/, loaders: ['react-hot', 'babel'] },
-      { test: /\.(png|ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/, exclude: /node_modules/, loaders: ['file'] }
+      { test: /\.(css|scss)$/, exclude: /(node_modules|assets)/, loader: ExtractTextPlugin.extract('style', 'css?modules&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!sass') },
+      { test: /\.js$/, exclude: /(node_modules|assets)/, loaders: ['react-hot', 'babel'] },
+      { test: /\.(png|ttf|eot|svg|woff(2)?)(\?[a-z0-9]+)?$/, exclude: /node_modules/, loaders: ['file'] },
+      { test: /\.static\.(css|js)$/, exclude: /node_modules/, loaders: ['file?name=[name].[ext]'] }
     ]
   }
 }

@@ -8,14 +8,14 @@
     <link rel="icon" type="image/png" href="{%=o.htmlWebpackPlugin.files.favicon%}">
     {% } %}
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/KaTeX/0.5.1/katex.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/assets/prism.static.css">
     {% for (var css in o.htmlWebpackPlugin.files.css) { %}
     <link rel="stylesheet" type="text/css" href="{%=o.htmlWebpackPlugin.files.css[css]%}">
     {% } %}
   </head>
   <body>
     <div id="app"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/0.0.1/prism.min.js"></script>
+    <script type="text/javascript" src="/assets/prism.static.js"></script>
     {% for (var chunk in o.htmlWebpackPlugin.files.chunks) { %}
     <script type="text/javascript" src="{%=o.htmlWebpackPlugin.files.chunks[chunk].entry%}"></script>
     {% } %}

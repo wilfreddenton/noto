@@ -15,6 +15,7 @@ export default class MDPreview extends Component {
     this.debouncedSpan = _.debounce(this.span, 300)
     this.cursorClickHandler = this.cursorClickHandler.bind(this)
     this.katexParser = this.katexParser.bind(this)
+    this.highlightCode = this.highlightCode.bind(this)
   }
   inlineOffsets(child) {
     if (child.tagName === 'EM') {
@@ -122,17 +123,24 @@ export default class MDPreview extends Component {
       }
     })
   }
+  highlightCode() {
+    let code = findDOMNode(this).querySelector('pre code')
+    if (code) {
+      if (code.parentNode.className.indexOf('line-numbers') <= -1)
+        code.parentNode.className += " line-numbers"
+      window.Prism.highlightElement(code)
+    }
+  }
   markup() {
     let markdown = this.katexParser(this.props.markdown)
     return { __html: marked(markdown) }
   }
   componentDidMount() {
+    this.highlightCode()
     this.span()
   }
   componentDidUpdate() {
-    let code = findDOMNode(this).querySelector('pre code')
-    if (code)
-      window.Prism.highlightElement(code)
+    this.highlightCode()
     this.debouncedSpan()
   }
   render() {
