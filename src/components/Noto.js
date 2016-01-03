@@ -16,7 +16,8 @@ import CSSModules from 'react-css-modules'
 import styles from '../styles/noto.scss'
 
 @connect(state => ({
-  selectedBlock: state.notoEditor,
+  selectedBlock: state.notoEditor.selectedID,
+  cursorPos: state.notoEditor.cursorPos,
   blocks: state.notoBlocks,
   raw: state.notoRaw
 }))
@@ -87,6 +88,7 @@ export default class Noto extends Component {
       return (<NotoBlock key={i} id={i} selected={selected} text={block.text}
         changeHandler={this.blockTextUpdate}
         pasteHandler={this.pasteHandler}
+        cursorPos={this.props.cursorPos}
         { ...bindActionCreators({ notoDeleteAction, notoSelectAction }, this.props.dispatch)} />)
     })
     //<MDPreview markdown={this.props.raw} />

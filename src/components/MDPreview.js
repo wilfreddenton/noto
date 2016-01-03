@@ -156,8 +156,10 @@ export default class MDPreview extends Component {
     this.span()
   }
   componentDidUpdate() {
-    this.highlightCode()
-    this.debouncedSpan()
+    if (this.props.markdown.length > 0) {
+      this.highlightCode()
+      this.debouncedSpan()
+    }
   }
   render() {
     const markup = this.markup()

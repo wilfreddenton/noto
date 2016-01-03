@@ -20,9 +20,6 @@ export default class NotoBlock extends Component {
   }
   constructor(props) {
     super(props)
-    this.state = {
-      justSelected: false
-    }
     this.changeHandler = this.changeHandler.bind(this)
     this.keydownHandler = this.keydownHandler.bind(this)
     this.keyupHandler = this.keyupHandler.bind(this)
@@ -36,11 +33,11 @@ export default class NotoBlock extends Component {
     this.debouncedFixInput = _.debounce(this.fixInput, 1000)
     this.setCursor = this.setCursor.bind(this)
   }
-  setCursor(i, time = 0) {
+  setCursor(i) {
     let editor = this.refs.editor
     setTimeout(() => {
       editor.selectionStart = editor.selectionEnd = i
-    }, time)
+    }, 100)
   }
   prepareEditor() {
     let editor = this.refs.editor
@@ -50,6 +47,7 @@ export default class NotoBlock extends Component {
     editor.addEventListener('keyup', this.keyupHandler)
     editor.focus()
     if (this.props.cursorPos === -1) {
+      console.log(editor.value, editor.value.length)
       this.setCursor(editor.value.length)
     } else {
       this.setCursor(this.props.cursorPos)
@@ -94,8 +92,7 @@ export default class NotoBlock extends Component {
     }
   }
   deleteHandler(e) {
-    const editor = this.refs.editor
-    if (editor.selectionStart === 0 && editor.selectionEnd === 0 && this.props.text !== '') {
+    if (this.refs.editor.selectionStart === 0 && this.props.text !== '') {
       e.preventDefault()
       this.props.notoSelectAction(this.props.id - 1, -1)
       return false
@@ -128,17 +125,10 @@ export default class NotoBlock extends Component {
       this.prepareEditor()
     }
   }
-  componentWillUpdate(nextProps) {
-    if (!this.props.selected && nextProps.selected)
-      this.setState({ justSelected: true })
-  }
   componentDidUpdate() {
     if (this.props.selected) {
       let editor = this.refs.editor
-      if (this.state.justSelected) {
-        this.prepareEditor()
-        this.setState({ justSelected: false })
-      }
+      this.prepareEditor()
       if (/.*\n\n$/.test(this.refs.editor.value)) {
         editor.value = editor.value.slice(0, -1)
       }
@@ -152,12 +142,12 @@ export default class NotoBlock extends Component {
     }
   }
   render() {
-    const editor = this.props.selected ? (
-      <div>
-        <div styleName="markdown-symbol"></div>
-        <textarea ref="editor" styleName="noto-editor" value={this.props.text} onChange={this.changeHandler} />
-      </div>
-    ) : null
+    const editor = (this.props.selected
+      ? (<div>
+           <div styleName="markdown-symbol"></div>
+           <textarea ref="editor" styleName="noto-editor" value={this.props.text} onChange={this.changeHandler} />
+         </div>)
+      : null)
     return (
       <div onClick={this.clickHandler} >
         <MDPreview ref="preview" markdown={this.props.text} cursorClickHandler={this.cursorClickHandler} />

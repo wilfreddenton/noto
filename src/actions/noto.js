@@ -36,10 +36,12 @@ export function notoDeleteAction(id) {
   }
 }
 
-export function notoSelectAction(id) {
+export function notoSelectAction(id, cursorPos) {
+  cursorPos = typeof cursorPos === 'undefined' ? -1 : cursorPos
   return {
     type: NOTO_SELECT_ACTION,
-    id: id
+    id: id,
+    cursorPos: cursorPos
   }
 }
 
