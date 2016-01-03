@@ -94,7 +94,12 @@ body {
 }
 textarea, code, pre {
   font-family: 'Inconsolata';
-  font-size: 14px
+}
+textarea {
+  font-size: 14px;
+}
+code {
+  font-size: 18px;
 }
 p, li {
   font-family: 'Charter';

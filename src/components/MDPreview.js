@@ -26,6 +26,8 @@ export default class MDPreview extends Component {
       return child.children.length + child.href.length + 4
     } else if (child.tagName === 'SPAN' && child.className.indexOf('katex') > -1) {
       return child.dataset.raw.length
+    } else if (child.tagName === 'CODE') {
+      return child.children.length + 2
     } else {
       return 1
     }
@@ -42,7 +44,7 @@ export default class MDPreview extends Component {
     } else if (tagName === 'P') {
       while ((child = child.previousSibling) !== null)
         i += this.inlineOffsets(child)
-    } else if (tagName === 'EM') {
+    } else if (tagName === 'EM' || tagName === 'CODE') {
       while ((child = child.previousSibling) !== null)
         i += 1
       child = childCopy
