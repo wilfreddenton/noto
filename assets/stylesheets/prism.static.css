@@ -330,6 +330,7 @@ div.prism-show-language {
 
 div.prism-show-language > div.prism-show-language-label {
 	color: black;
+  font-family: 'Inconsolata', monospace;
 	background-color: #CFCFCF;
 	display: inline-block;
 	position: absolute;

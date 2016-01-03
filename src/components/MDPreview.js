@@ -24,6 +24,8 @@ export default class MDPreview extends Component {
       return child.children.length + 4
     } else if (child.tagName === 'A') {
       return child.children.length + child.href.length + 4
+    } else if (child.tagName === 'SPAN' && child.className.indexOf('katex') > -1) {
+      return child.dataset.raw.length
     } else {
       return 1
     }
@@ -75,7 +77,15 @@ export default class MDPreview extends Component {
     return i
   }
   cursorClickHandler(e) {
-    let child = e.target
+    let katex = e.path.filter((ele, i) => {
+      return ele.className && /^\s*katex\s*$/.test(ele.className)
+    })
+    let child = null
+    if (katex.length > 0) {
+      child = katex[0]
+    } else {
+      child = e.target
+    }
     let i = this.cursorOffset(child)
     const eventLeft = e.clientX
     const childLeft = child.offsetLeft
@@ -92,10 +102,14 @@ export default class MDPreview extends Component {
     let children = _.map(node.childNodes, (child) => child)
     _.forEach(children, (child, i) => {
       let docFrag = document.createDocumentFragment()
+      if (child.tagName === 'SPAN' && child.className.indexOf('katex') > -1) {
+        child.onclick = this.cursorClickHandler
+        return
+      }
       if (child.tagName === 'CODE' && child.parentNode.tagName === 'PRE') {
         return
       }
-      if ((child.className && child.className.indexOf('katex') > -1) || child.tagName === 'SPAN')
+      if ((child.className && child.className.indexOf('katex') > -1) || child.tagName === 'SPAN' || child.tagName === 'DIV')
         return
       if (child.nodeName === '#text') {
         const text = child.textContent
@@ -117,7 +131,9 @@ export default class MDPreview extends Component {
     return string.replace(/\$\$\s*((?!\$\$)[^])*\s*\$\$/g, (match, text, id) => {
       const latex = match.slice(2, -2).trim()
       try {
-        return katex.renderToString(latex)
+        let markup = katex.renderToString(latex)
+        markup = markup.slice(0, 5) + ' data-raw="' + match + '"' + markup.slice(5)
+        return markup
       } catch (e) {
         return match
       }
