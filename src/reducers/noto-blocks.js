@@ -22,7 +22,7 @@ export default function notoBlocks(state = [
     }
     case NOTO_JOIN_ACTION: {
       let newState = [...state]
-      newState[action.toID].text = newState[action.toID].text.trim() + '\n' + action.fromText
+      newState[action.toID].text = newState[action.toID].text.slice(0, -1) + action.fromText
       newState.splice(action.fromID, 1)
       return newState
     }

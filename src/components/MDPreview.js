@@ -11,6 +11,7 @@ export default class MDPreview extends Component {
   }
   constructor(props) {
     super(props)
+    this.state = { unmounting: false }
     this.span = this.span.bind(this)
     this.debouncedSpan = _.debounce(this.span, 300)
     this.cursorClickHandler = this.cursorClickHandler.bind(this)
@@ -157,8 +158,11 @@ export default class MDPreview extends Component {
     this.highlightCode()
     this.span()
   }
+  componentWillUnmount() {
+    this.setState({ unmounting: true })
+  }
   componentDidUpdate() {
-    if (this.props.markdown.length > 0) {
+    if (this.props.markdown.length > 0 && !this.state.unmounting) {
       this.highlightCode()
       this.debouncedSpan()
     }
