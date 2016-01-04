@@ -40,7 +40,7 @@ export default class MDPreview extends Component {
     if (/H[1-6]/.test(tagName)) {
       while ((child = child.previousSibling) !== null)
         i += 1
-      i += text.match(/#\s+/)[0].length
+      i += text.match(/#+\s+/)[0].length
     } else if (tagName === 'P') {
       while ((child = child.previousSibling) !== null)
         i += this.inlineOffsets(child)

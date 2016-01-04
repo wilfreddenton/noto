@@ -33,6 +33,6 @@ render(
 
 if (process.env.NODE_ENV !== 'production') {
   const showDevTools = require('./showDevTools').default
-  //showDevTools(store)
+  showDevTools(store)
 }
 
