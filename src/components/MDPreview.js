@@ -117,7 +117,7 @@ export default class MDPreview extends Component {
         child.onclick = this.cursorClickHandler
         return
       }
-      if (child.tagName === 'CODE' && child.parentNode.tagName === 'PRE') {
+      if ((child.tagName === 'CODE' && child.parentNode.tagName === 'PRE') || child.tagName === 'BLOCKQUOTE') {
         return
       }
       if ((child.className && child.className.indexOf('katex') > -1) || child.tagName === 'SPAN' || child.tagName === 'DIV')

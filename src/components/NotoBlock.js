@@ -151,13 +151,14 @@ export default class NotoBlock extends Component {
       if (/.*\n\n$/.test(editor.value)) {
         editor.value = editor.value.slice(0, -1)
       }
-      if (/^```[^]*```\n?$/.test(editor.value)
-        || /^>\s+.*\n\n>\s+.*/.test(editor.value)
-        || /[0-9]+\.\s+.*\n\n[0-9]+\.\s+.*/.test(editor.value)
-        || /\-\s+.*\n\n\-\s+.*/.test(editor.value)
-        || /\*\s+.*\n\n\*\s+.*/.test(editor.value)) {
+      if (/^```[^]*```\n?$/.test(editor.value) // code block
+        || />\s+.*\n\n>\s+.*/.test(editor.value) // blockquote
+          || /[0-9]+\.\s+.*\n\n[0-9]+\.\s+.*/.test(editor.value) // ordered list
+            || /\-\s+.*\n\n\-\s+.*/.test(editor.value) // unordered list
+              || /\*\s+.*\n\n\*\s+.*/.test(editor.value)) { // unordered list
         return
       }
+      // since the previous checks fail we split on the double newline
       if (/.*\n\n.*/.test(editor.value)) {
         const blocks = editor.value.split('\n\n')
         this.props.notoWriteAction(this.props.id, blocks[0] + '\n\n')
