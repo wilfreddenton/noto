@@ -11,7 +11,6 @@ export default class MDPreview extends Component {
   }
   constructor(props) {
     super(props)
-    this.state = { unmounting: false }
     this.span = this.span.bind(this)
     this.debouncedSpan = _.debounce(this.span, 300)
     this.cursorClickHandler = this.cursorClickHandler.bind(this)
@@ -101,7 +100,16 @@ export default class MDPreview extends Component {
   }
   span(ele) {
     // traverse dom and replace textContent with character span wrapped version
-    let node = ele ? ele : findDOMNode(this)
+    let node = null
+    if (typeof ele !== 'undefined') {
+      node = ele
+    } else {
+      try {
+        node = findDOMNode(this)
+      } catch (e) {
+        return
+      }
+    }
     let children = _.map(node.childNodes, (child) => child)
     _.forEach(children, (child, i) => {
       let docFrag = document.createDocumentFragment()
@@ -158,11 +166,8 @@ export default class MDPreview extends Component {
     this.highlightCode()
     this.span()
   }
-  componentWillUnmount() {
-    this.setState({ unmounting: true })
-  }
   componentDidUpdate() {
-    if (this.props.markdown.length > 0 && !this.state.unmounting) {
+    if (this.props.markdown.length > 0) {
       this.highlightCode()
       this.debouncedSpan()
     }
