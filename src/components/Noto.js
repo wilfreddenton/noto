@@ -28,7 +28,8 @@ export default class Noto extends Component {
     blocks: PropTypes.array,
     dispatch: PropTypes.func,
     selectedBlock: PropTypes.number,
-    raw: PropTypes.string
+    raw: PropTypes.string,
+    cursorPos: PropTypes.number
   }
   constructor(props) {
     super(props)

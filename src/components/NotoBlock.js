@@ -19,7 +19,7 @@ export default class NotoBlock extends Component {
     id: PropTypes.number,
     selected: PropTypes.bool,
     text: PropTypes.string,
-    cusorPos: PropTypes.number
+    cursorPos: PropTypes.number
   }
   constructor(props) {
     super(props)
@@ -150,8 +150,15 @@ export default class NotoBlock extends Component {
       }
       if (/.*\n\n$/.test(editor.value)) {
         editor.value = editor.value.slice(0, -1)
-      } else if (/^((?!```)[^>])*\n\n.*/.test(editor.value)) {
-        console.log(editor.value.match(/.*\n\n.*/))
+      }
+      if (/^```[^]*```\n?$/.test(editor.value)
+        || /^>\s+.*\n\n>\s+.*/.test(editor.value)
+        || /[0-9]+\.\s+.*\n\n[0-9]+\.\s+.*/.test(editor.value)
+        || /\-\s+.*\n\n\-\s+.*/.test(editor.value)
+        || /\*\s+.*\n\n\*\s+.*/.test(editor.value)) {
+        return
+      }
+      if (/.*\n\n.*/.test(editor.value)) {
         const blocks = editor.value.split('\n\n')
         this.props.notoWriteAction(this.props.id, blocks[0] + '\n\n')
         this.props.notoCreateAction(this.props.id, this.props.id + 1, blocks[1])

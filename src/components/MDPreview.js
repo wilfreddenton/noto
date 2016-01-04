@@ -154,7 +154,7 @@ export default class MDPreview extends Component {
     let code = findDOMNode(this).querySelector('pre code')
     if (code) {
       if (code.parentNode.className.indexOf('line-numbers') <= -1)
-        code.parentNode.className += " line-numbers"
+        code.parentNode.className += ' line-numbers'
       window.Prism.highlightElement(code)
     }
   }
