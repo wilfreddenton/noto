@@ -150,7 +150,8 @@ export default class NotoBlock extends Component {
       }
       if (/.*\n\n$/.test(editor.value)) {
         editor.value = editor.value.slice(0, -1)
-      } else if (/.*\n\n.*/.test(editor.value)) {
+      } else if (/^((?!```)[^>])*\n\n.*/.test(editor.value)) {
+        console.log(editor.value.match(/.*\n\n.*/))
         const blocks = editor.value.split('\n\n')
         this.props.notoWriteAction(this.props.id, blocks[0] + '\n\n')
         this.props.notoCreateAction(this.props.id, this.props.id + 1, blocks[1])
