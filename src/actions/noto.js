@@ -4,13 +4,23 @@ import {
   NOTO_CREATE_ACTION,
   NOTO_DELETE_ACTION,
   NOTO_SELECT_ACTION,
-  NOTO_BLOCKS_ACTION, } from '../constants/ActionTypes'
+  NOTO_BLOCKS_ACTION,
+  NOTO_JOIN_ACTION } from '../constants/ActionTypes'
 
 export function notoWriteAction(id, text) {
   return {
     type: NOTO_WRITE_ACTION,
     id: id,
     text: text
+  }
+}
+
+export function notoJoinAction(fromID, toID, fromText) {
+  return {
+    type: NOTO_JOIN_ACTION,
+    fromID: fromID,
+    toID: toID,
+    fromText: fromText
   }
 }
 
@@ -21,11 +31,12 @@ export function notoRawAction(raw) {
   }
 }
 
-export function notoCreateAction(id, toID) {
+export function notoCreateAction(id, toID, value='') {
   return {
     type: NOTO_CREATE_ACTION,
     id: id,
-    toID: toID
+    toID: toID,
+    value: value
   }
 }
 
@@ -36,8 +47,7 @@ export function notoDeleteAction(id) {
   }
 }
 
-export function notoSelectAction(id, cursorPos) {
-  cursorPos = typeof cursorPos === 'undefined' ? -1 : cursorPos
+export function notoSelectAction(id, cursorPos=-0.5) {
   return {
     type: NOTO_SELECT_ACTION,
     id: id,

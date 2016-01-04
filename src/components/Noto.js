@@ -7,7 +7,8 @@ import {
   notoCreateAction,
   notoDeleteAction,
   notoSelectAction,
-  notoBlocksAction } from '../actions/noto'
+  notoBlocksAction,
+  notoJoinAction } from '../actions/noto'
 import marked from 'marked'
 import _ from 'lodash'
 import MDPreview from './MDPreview'
@@ -89,7 +90,7 @@ export default class Noto extends Component {
         changeHandler={this.blockTextUpdate}
         pasteHandler={this.pasteHandler}
         cursorPos={this.props.cursorPos}
-        { ...bindActionCreators({ notoDeleteAction, notoSelectAction }, this.props.dispatch)} />)
+        { ...bindActionCreators({ notoDeleteAction, notoSelectAction, notoCreateAction, notoWriteAction, notoJoinAction }, this.props.dispatch)} />)
     })
     //<MDPreview markdown={this.props.raw} />
     return (

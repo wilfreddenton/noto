@@ -2,7 +2,8 @@ import {
   NOTO_WRITE_ACTION,
   NOTO_CREATE_ACTION,
   NOTO_DELETE_ACTION,
-  NOTO_BLOCKS_ACTION } from '../constants/ActionTypes'
+  NOTO_BLOCKS_ACTION,
+  NOTO_JOIN_ACTION } from '../constants/ActionTypes'
 
 const newBlock = {
   text: ''
@@ -19,9 +20,15 @@ export default function notoBlocks(state = [
       newState[action.id].text = action.text
       return newState
     }
+    case NOTO_JOIN_ACTION: {
+      let newState = [...state]
+      newState[action.toID].text = newState[action.toID].text.trim() + '\n' + action.fromText
+      newState.splice(action.fromID, 1)
+      return newState
+    }
     case NOTO_CREATE_ACTION: {
       let newState = [...state]
-      newState.splice(action.id + 1, 0, Object.assign({}, newBlock))
+      newState.splice(action.id + 1, 0, Object.assign({}, newBlock, { text: action.value }))
       return newState
     }
     case NOTO_DELETE_ACTION: {

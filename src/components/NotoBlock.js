@@ -11,8 +11,11 @@ export default class NotoBlock extends Component {
   static propTypes = {
     changeHandler: PropTypes.func,
     pasteHandler: PropTypes.func,
+    notoCreateAction: PropTypes.func,
     notoDeleteAction: PropTypes.func,
     notoSelectAction: PropTypes.func,
+    notoWriteAction: PropTypes.func,
+    notoJoinAction: PropTypes.func,
     id: PropTypes.number,
     selected: PropTypes.bool,
     text: PropTypes.string,
@@ -49,8 +52,10 @@ export default class NotoBlock extends Component {
     editor.addEventListener('keydown', this.keydownHandler)
     editor.addEventListener('keyup', this.keyupHandler)
     editor.focus()
-    if (this.props.cursorPos === -1) {
-      this.setCursor(editor.value.length)
+    if (this.props.cursorPos === -0.5) {
+      this.setCursor(this.props.text.length)
+    } else if (this.props.cursorPos < -0.5) {
+      this.setCursor(this.props.text.length + this.props.cursorPos)
     } else {
       this.setCursor(this.props.cursorPos)
     }
@@ -97,7 +102,11 @@ export default class NotoBlock extends Component {
     const editor = this.refs.editor
     if (editor.selectionStart === 0 && editor.selectionEnd === 0 && this.props.text !== '') {
       e.preventDefault()
-      this.props.notoSelectAction(this.props.id - 1, -1)
+      if (this.props.id !== 0) {
+        const length = this.props.text.length
+        this.props.notoJoinAction(this.props.id, this.props.id - 1, this.props.text)
+        this.props.notoSelectAction(this.props.id - 1, -length)
+      }
       return false
     } else if (this.props.text === '') {
       e.preventDefault()
@@ -108,7 +117,7 @@ export default class NotoBlock extends Component {
   updownHandler(e, key) {
     const editor = this.refs.editor
     if (key === 38 && editor.selectionStart === 0) { // up
-      this.props.notoSelectAction(this.props.id - 1, -1)
+      this.props.notoSelectAction(this.props.id - 1)
     } else if (key === 40 && editor.selectionStart === editor.value.length) { // down
       this.props.notoSelectAction(this.props.id + 1, 0)
     }
@@ -139,8 +148,12 @@ export default class NotoBlock extends Component {
         this.prepareEditor()
         this.setState({ justSelected: false })
       }
-      if (/.*\n\n$/.test(this.refs.editor.value)) {
+      if (/.*\n\n$/.test(editor.value)) {
         editor.value = editor.value.slice(0, -1)
+      } else if (/.*\n\n.*/.test(editor.value)) {
+        const blocks = editor.value.split('\n\n')
+        this.props.notoWriteAction(this.props.id, blocks[0] + '\n\n')
+        this.props.notoCreateAction(this.props.id, this.props.id + 1, blocks[1])
       }
     }
   }
