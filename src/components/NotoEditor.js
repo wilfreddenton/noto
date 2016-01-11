@@ -158,9 +158,7 @@ export default class NotoEditor extends Component {
     }
   }
   componentDidMount() {
-    setTimeout(() => {
-      this.openAnimation()
-    })
+    this.openAnimation()
   }
   render() {
     const blocks = this.props.blocks.map((block, i) => {
