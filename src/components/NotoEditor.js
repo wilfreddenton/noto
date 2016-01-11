@@ -1,4 +1,5 @@
 import React, { PropTypes, Component } from 'react'
+import { findDOMNode } from 'react-dom'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import {
@@ -9,34 +10,95 @@ import {
   notoSelectAction,
   notoBlocksAction,
   notoJoinAction } from '../actions/noto'
+import { fetchPostAction } from '../actions/posts'
 import marked from 'marked'
 import _ from 'lodash'
+import TWEEN from 'tween.js'
 import MDPreview from './MDPreview'
 import NotoBlock from './NotoBlock'
 import CSSModules from 'react-css-modules'
 import styles from '../styles/noto.scss'
 
 @connect(state => ({
+  post: state.post,
   selectedBlock: state.notoEditor.selectedID,
   cursorPos: state.notoEditor.cursorPos,
   blocks: state.notoBlocks,
   raw: state.notoRaw
 }))
 @CSSModules(styles)
-export default class Noto extends Component {
+export default class NotoEditor extends Component {
   static propTypes = {
+    post: PropTypes.object,
+    unique: PropTypes.string,
     blocks: PropTypes.array,
     dispatch: PropTypes.func,
     selectedBlock: PropTypes.number,
     raw: PropTypes.string,
-    cursorPos: PropTypes.number
+    cursorPos: PropTypes.number,
+    closing: PropTypes.bool
   }
   constructor(props) {
     super(props)
+    this.state = {
+      open: false
+    }
     this.blockTextUpdate = this.blockTextUpdate.bind(this)
+    this.animate = this.animate.bind(this)
+    this.openAnimation = this.openAnimation.bind(this)
+    this.closeAnimation = this.closeAnimation.bind(this)
     this.pasteHandler = this.pasteHandler.bind(this)
     this.generateBlocks = this.generateBlocks.bind(this)
     this.saveRaw = _.debounce(this.saveRaw.bind(this), 1000)
+  }
+  animate() {
+    requestAnimationFrame(this.animate)
+    TWEEN.update()
+  }
+  openAnimation() {
+    let ele = findDOMNode(this)
+    let size = { height: 0, opacity: 0 }
+    let tween = new TWEEN.Tween(size)
+      .to({ height: ele.clientHeight, opacity: 1 }, 300)
+      .easing(TWEEN.Easing.Cubic.InOut)
+      .onStart(function() {
+        ele.style.height = size.height.toString + 'px'
+        ele.style.opacity = size.opacity
+        ele.style.position = 'relative'
+      })
+      .onUpdate(function() {
+        ele.style.height = this.height.toString() + 'px'
+        ele.style.opacity = this.opacity
+      })
+      .onComplete(function() {
+        ele.style.height = 'auto'
+        ele.style.opacity = 1
+        ele.style.paddingBottom = '30px'
+      })
+      .start()
+    this.animate()
+  }
+  closeAnimation() {
+    let ele = findDOMNode(this)
+    let size = { height: ele.clientHeight, opacity: 1 }
+    let tween = new TWEEN.Tween(size)
+      .to({ height: 0, opacity: 0 }, 300)
+      .easing(TWEEN.Easing.Cubic.InOut)
+      .onStart(function() {
+        ele.style.height = size.height.toString() + 'px'
+        ele.style.opacity = size.opacity
+      })
+      .onUpdate(function() {
+        ele.style.height = this.height.toString() + 'px'
+        ele.style.opacity = this.opacity
+      })
+      .onComplete(function() {
+        ele.style.height = '0px'
+        ele.style.opacity = 0
+        ele.style.paddingBottom = '0px'
+      })
+      .start()
+    this.animate()
   }
   blockTextUpdate(id, text) {
     const dispatch = this.props.dispatch
@@ -79,10 +141,26 @@ export default class Noto extends Component {
     this.props.dispatch(notoBlocksAction(blocks))
     this.props.dispatch(notoSelectAction(toID))
   }
+  componentWillMount() {
+    this.props.dispatch(fetchPostAction(this.props.unique))
+  }
+  componentWillUpdate(nextProps) {
+    if (nextProps.unique !== this.props.unique) {
+      this.props.dispatch(fetchPostAction(nextProps.unique))
+    }
+    if (typeof nextProps.post === 'object' && (_.isEmpty(this.props.post) || this.props.post.unique !== nextProps.post.unique)) {
+      const blocks = this.generateBlocks(nextProps.post.content)
+      this.props.dispatch(notoBlocksAction(blocks))
+      this.props.dispatch(notoSelectAction(blocks.length - 1))
+    }
+    if (nextProps.closing) {
+      this.closeAnimation()
+    }
+  }
   componentDidMount() {
-    const blocks = this.generateBlocks()
-    this.props.dispatch(notoBlocksAction(blocks))
-    this.props.dispatch(notoSelectAction(blocks.length - 1))
+    setTimeout(() => {
+      this.openAnimation()
+    })
   }
   render() {
     const blocks = this.props.blocks.map((block, i) => {
@@ -95,7 +173,7 @@ export default class Noto extends Component {
     })
     //<MDPreview markdown={this.props.raw} />
     return (
-      <div styleName="noto">
+      <div id="noto-editor" ref="editor" styleName="noto-editor">
         {blocks}
       </div>
     )

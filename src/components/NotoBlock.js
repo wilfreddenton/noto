@@ -148,21 +148,23 @@ export default class NotoBlock extends Component {
         this.prepareEditor()
         this.setState({ justSelected: false })
       }
-      if (/.*\n\n$/.test(editor.value)) {
-        editor.value = editor.value.slice(0, -1)
-      }
-      if (/^```[^]*```\n?$/.test(editor.value) // code block
-        || />\s+.*\n\n>\s+.*/.test(editor.value) // blockquote
-          || /[0-9]+\.\s+.*\n\n[0-9]+\.\s+.*/.test(editor.value) // ordered list
-            || /\-\s+.*\n\n\-\s+.*/.test(editor.value) // unordered list
-              || /\*\s+.*\n\n\*\s+.*/.test(editor.value)) { // unordered list
-        return
-      }
-      // since the previous checks fail we split on the double newline
-      if (/.*\n\n.*/.test(editor.value)) {
-        const blocks = editor.value.split('\n\n')
-        this.props.notoWriteAction(this.props.id, blocks[0] + '\n\n')
-        this.props.notoCreateAction(this.props.id, this.props.id + 1, blocks[1])
+      if (typeof editor !== 'undefined') {
+        if (/.*\n\n$/.test(editor.value)) {
+          editor.value = editor.value.slice(0, -1)
+        }
+        if (/^```[^]*```\n?$/.test(editor.value) // code block
+          || />\s+.*\n\n>\s+.*/.test(editor.value) // blockquote
+            || /[0-9]+\.\s+.*\n\n[0-9]+\.\s+.*/.test(editor.value) // ordered list
+              || /\-\s+.*\n\n\-\s+.*/.test(editor.value) // unordered list
+                || /\*\s+.*\n\n\*\s+.*/.test(editor.value)) { // unordered list
+          return
+        }
+        // since the previous checks fail we split on the double newline
+        if (/.*\n\n.*/.test(editor.value)) {
+          const blocks = editor.value.split('\n\n')
+          this.props.notoWriteAction(this.props.id, blocks[0] + '\n\n')
+          this.props.notoCreateAction(this.props.id, this.props.id + 1, blocks[1])
+        }
       }
     }
   }
@@ -177,7 +179,7 @@ export default class NotoBlock extends Component {
     const editor = this.props.selected ? (
       <div>
         <div styleName="markdown-symbol"></div>
-        <textarea ref="editor" styleName="noto-editor" value={this.props.text} onChange={this.changeHandler} />
+        <textarea ref="editor" styleName="noto-block" value={this.props.text} onChange={this.changeHandler} />
       </div>
     ) : null
     return (

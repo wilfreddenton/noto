@@ -7,7 +7,8 @@ import { Router, Route, IndexRoute } from 'react-router'
 import configureStore from './store/configureStore'
 import createHashHistory from 'history/lib/createHashHistory'
 import App from './containers/App'
-import Home from './components/Home'
+import Noto from './components/Noto'
+import NotoEditor from './components/NotoEditor'
 import NotFound from './components/NotFound'
 import Test from './components/Test'
 
@@ -17,8 +18,9 @@ const history = createHashHistory()
 const routes = (
   <Router history={history}>
     <Route path="/" component={App}>
-      <IndexRoute component={Home} />
-      <Route path="test" component={Test} />
+      <IndexRoute component={Test} />
+      <Route path="posts" component={Noto} />
+      <Route path="posts/:unique/edit" component={Noto} />
     </Route>
     <Route path="*" component={NotFound} />
   </Router>

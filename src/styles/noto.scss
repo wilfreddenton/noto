@@ -1,9 +1,19 @@
 .noto {
-  max-width: 700px;
-  width: 100%;
-  margin: auto;
+  padding-top: 60px;
+  position: relative
 }
 .noto-editor {
+  max-width: 740px;
+  padding: 0 20px 0 20px;
+  width: 100%;
+  margin: 0 auto 0 auto;
+  background: white;
+  opacity: 0;
+  position: absolute;
+  border-bottom: 1px solid #eee;
+  overflow: hidden;
+}
+.noto-block {
   width: 100%;
   font-size: 14px;
   max-width: 700px;
@@ -30,4 +40,66 @@
   background-size: 100%;
   margin-bottom: -15px;
   background-image: url('../../assets/images/markdown.png')
+}
+
+.noto-post-list-item {
+  transition: 200ms;
+  max-width: 740px;
+  margin: 0 auto;
+  padding: 18px 20px;
+  background: white;
+  border-bottom: 1px solid #eee;
+  font-family: 'Open Sans';
+  transition: 200ms;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow-x: scroll;
+  display: block;
+  z-index: 100;
+
+  &:hover {
+    background: #eee
+  }
+  h3 {
+    display: inline-block;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 400;
+    margin-right: 10px;
+    color: #333;
+  }
+  h4 {
+    color: #666;
+    display: inline-block;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 300;
+  }
+}
+.noto-post-list-item.fixed {
+  width: 100%;
+  position: fixed;
+  top: 0px;
+  left: 50%;
+  margin-left: -370px;
+  box-shadow: 0px 3px 2px -2px rgba(0,0,0,0.3);
+  border: none;
+}
+.noto-post-list-item-placeholder {
+  height: 64px;
+  margin: 0 auto;
+  max-width: 740px;
+  width: 100%;
+}
+.note {
+  color: #666;
+  position: fixed;
+  bottom: 5px;
+  z-index: -1;
+  display: none;
+  right: 5px;
+  span {
+    font-family: 'Inconsolata';
+    font-size: 12px;
+  }
 }
